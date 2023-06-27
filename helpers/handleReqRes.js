@@ -1,5 +1,7 @@
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
+const routes = require('../routes');
+const { notFoundHandler } = require('../handlers/routesHandlers/notFoundHandlers');
 
 const handler = {};
 
@@ -10,11 +12,34 @@ handler.handleReqRes = (req, res) => {
     const path = parseUrl.pathname;
     const trimedPath = path.replace(/^\/+|\/+$/g, '');
     console.log(trimedPath);
-    // const method = req.method.toLowerCase();
-    // const querryStringObject = parseUrl.query;
-    // const headerObject = req.headers;
-    // console.log(method, querryStringObject, headerObject);
+    const method = req.method.toLowerCase();
+    const querryStringObject = parseUrl.query;
+    const headerObject = req.headers;
 
+    // console.log(method, querryStringObject, headerObject);
+    const requestProperties = {
+        parseUrl,
+        path,
+        trimedPath,
+        method,
+        querryStringObject,
+        headerObject,
+    };
+
+    /// working with routes
+    const choosenHandlers = routes[trimedPath] ? routes[trimedPath] : notFoundHandler;
+
+    choosenHandlers(requestProperties, (statusCode, payload) => {
+        statusCode = typeof statusCode === 'number' ? statusCode : 500;
+        payload = typeof payload === 'object' ? payload : {};
+
+        const payloadString = JSON.stringify(payload);
+
+        // return the final response
+
+        res.writeHead(statusCode);
+        res.end(payloadString);
+    });
     // working with req to help with receiving body in post routes
 
     /// decoder _> a node method

@@ -1,9 +1,15 @@
 const http = require('http');
 const { handleReqRes } = require('./helpers/handleReqRes');
 const environment = require('./helpers/environment');
+const data = require('./lib/data');
 // app object ~ module scaffolding
 
 const app = {};
+// testing file system
+
+data.create('test', 'test', { name: 'sabbir' }, (err) => {
+    console.log(err);
+});
 
 // // config handeled by environment
 

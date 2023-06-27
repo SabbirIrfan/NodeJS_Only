@@ -28,7 +28,7 @@ handler.handleReqRes = (req, res) => {
 
     /// working with routes
     const choosenHandlers = routes[trimedPath] ? routes[trimedPath] : notFoundHandler;
-
+    // need to understand this callback function
     choosenHandlers(requestProperties, (statusCode, payload) => {
         statusCode = typeof statusCode === 'number' ? statusCode : 500;
         payload = typeof payload === 'object' ? payload : {};

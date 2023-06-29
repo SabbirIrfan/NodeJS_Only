@@ -5,12 +5,27 @@ const data = require('./lib/data');
 // app object ~ module scaffolding
 
 const app = {};
-// testing file system
-
-data.create('test', 'test', { name: 'sabbir' }, (err) => {
-    console.log(err);
-});
-
+//  testing file system
+// write
+// data.create('test', 'test', { name: 'sabbir' }, (err) => {
+//     console.log(err);
+// });
+// Read
+// data.read('test', 'test', (err, fileData) => {
+//     if (!err) {
+//         console.log(fileData);
+//     } else console.log(err);
+// });
+// update
+// data.update('test', 'test', { name: 'newSabbir', age: '28', obostha: 'jobless' }, (err) => {
+//     console.log(err);
+// });
+// delete
+// data.delete('test', 'test', (err) => {
+//     if (err) {
+//         console.log(err);
+//     } else console.log('success');
+// });
 // // config handeled by environment
 
 // app.config = {

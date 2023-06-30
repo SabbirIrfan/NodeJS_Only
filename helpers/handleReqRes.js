@@ -2,6 +2,7 @@ const url = require('url');
 const { StringDecoder } = require('string_decoder');
 const routes = require('../routes');
 const { notFoundHandler } = require('../handlers/routesHandlers/notFoundHandlers');
+const { parseJSON } = require('./utilities');
 
 const handler = {};
 
@@ -15,6 +16,7 @@ handler.handleReqRes = (req, res) => {
     const method = req.method.toLowerCase();
     const querryStringObject = parseUrl.query;
     const headerObject = req.headers;
+    let bodyData = '';
 
     // console.log(method, querryStringObject, headerObject);
     const requestProperties = {
@@ -28,34 +30,36 @@ handler.handleReqRes = (req, res) => {
 
     /// working with routes
     const choosenHandlers = routes[trimedPath] ? routes[trimedPath] : notFoundHandler;
-    // need to understand this callback function
-    choosenHandlers(requestProperties, (statusCode, payload) => {
-        statusCode = typeof statusCode === 'number' ? statusCode : 500;
-        payload = typeof payload === 'object' ? payload : {};
 
-        const payloadString = JSON.stringify(payload);
-
-        // return the final response
-
-        res.writeHead(statusCode);
-        res.end(payloadString);
-    });
     // working with req to help with receiving body in post routes
 
     /// decoder _> a node method
 
     const decoder = new StringDecoder('utf-8');
-
-    let bodyData = '';
-
     req.on('data', (buffer) => {
         bodyData += decoder.write(buffer);
     });
 
     req.on('end', () => {
         bodyData += decoder.end();
-        console.log(bodyData);
-        res.end('<p> hows <h1>world</h1></p>'); /// note why res.end is inside the req.on?
+        // we used parseJSON to make sure that the parsing heppens properly
+        // and if the parsing is not happening correctly the app doesn't crash
+        requestProperties.body = parseJSON(bodyData);
+        const reqPayload = '';
+        // need to understand this callback function
+        choosenHandlers(requestProperties, (statusCode, payload) => {
+            statusCode = typeof statusCode === 'number' ? statusCode : 500;
+            payload = typeof payload === 'object' ? payload : {};
+
+            const payloadString = JSON.stringify(payload);
+
+            // return the final response
+
+            res.writeHead(statusCode);
+            res.end(payloadString);
+        });
+
+        /// note why res.end is inside the req.on?
         // because the res.end will fire and the event will be lost before we can get all the
         // buffer in req.on as it is asycronous(i guess)
     });
